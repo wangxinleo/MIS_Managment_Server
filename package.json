@@ -12,6 +12,9 @@
     "express": "~4.16.1",
     "http-errors": "~1.6.3",
     "jade": "~1.11.0",
-    "morgan": "~1.9.1"
+    "jwt-simple": "^0.5.6",
+    "moment": "^2.26.0",
+    "morgan": "~1.9.1",
+    "mssql": "^6.2.0"
   }
 }
