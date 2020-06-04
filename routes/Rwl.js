@@ -7,11 +7,33 @@ router.post('/getCY', (req, res, next) => {
     'SELECT WF_ProcessName as name, count(*) as value  FROM [bpm].[dbo].[BPM_ArchivedData] where WF_DocCreated>=dateadd(month,-2,getdate())  group by WF_ProcessName order by value desc'
   db(sql, (result) => {
     // console.log(result)
+    const arr = [
+      '#1890FF',
+      '#36CBCB',
+      '#4ECB73',
+      '#FBD437',
+      '#F2637B',
+      '#975FE5',
+    ]
+    let index = Math.floor(Math.random() * arr.length)
+
     let totalCount = 0
+    let hotElement = []
     const resTemp = result.recordset
-    resTemp.forEach((element) => {
+    resTemp.forEach((element, index) => {
       totalCount += element.value
+      if (index < 25) {
+        hotElement.push(element)
+      }
     })
+    // const resTemp = result.recordset
+    // let hotElement = resTemp.slice(0, 26)
+    // let totalCount = resTemp.reduce((prev, current, index, arr) => {
+    //   if (prev.constructor !== Number) {
+    //     prev = prev.value
+    //   }
+    //   return prev + current.value
+    // })
     return res.json({
       code: 200,
       msg: 'success',
@@ -27,27 +49,16 @@ router.post('/getCY', (req, res, next) => {
           {
             type: 'wordCloud',
             gridSize: 15,
-            sizeRange: [6, 50],
+            sizeRange: [12, 50],
             rotationRange: [0, 0],
             width: '100%',
             height: '100%',
             textStyle: {
               normal: {
-                color() {
-                  const arr = [
-                    '#1890FF',
-                    '#36CBCB',
-                    '#4ECB73',
-                    '#FBD437',
-                    '#F2637B',
-                    '#975FE5',
-                  ]
-                  let index = Math.floor(Math.random() * arr.length)
-                  return arr[index]
-                },
+                color: arr[index],
               },
             },
-            data: result.recordset,
+            data: hotElement,
           },
         ],
       },
