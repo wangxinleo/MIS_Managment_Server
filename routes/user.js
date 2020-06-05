@@ -7,6 +7,7 @@ router.get('/', function (req, res, next) {
   res.send('respond with a resource')
 })
 
+// 权限模块
 router.post('/info', function (req, res, next) {
   const { accessToken } = req.body
   const app = req.app

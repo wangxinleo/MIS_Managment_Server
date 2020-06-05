@@ -3,7 +3,7 @@ var jwt = require('jwt-simple')
 var moment = require('moment')
 var router = express.Router()
 
-/* GET home page. */
+// 登陆模块
 router.post('/login', (req, res, next) => {
   const { userName, password } = req.body
   if (userName !== 'admin' && password !== '123456') {
@@ -30,7 +30,7 @@ router.post('/login', (req, res, next) => {
     },
   })
 })
-
+// 退出模块
 router.post('/logout', (req, res, next) => {
   return res.json({
     code: 200,

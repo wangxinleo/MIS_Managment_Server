@@ -3,11 +3,10 @@ var express = require('express')
 var path = require('path')
 var cookieParser = require('cookie-parser')
 var logger = require('morgan')
-// var jwt = require('jwt-simple')
-
+// 路由路径
 var indexRouter = require('./routes/index')
 var usersRouter = require('./routes/user')
-var RwlRouter = require('./routes/Rwl')
+var processEchartsRouter = require('./routes/processEcharts')
 
 var app = express()
 
@@ -27,7 +26,7 @@ app.all('*', function (req, res, next) {
 // view engine setup
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'jade')
-
+// 设置token密钥
 app.set('jwtTokenSecret', 'xJCnfKONV')
 
 app.use(logger('dev'))
@@ -35,10 +34,10 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
-
-app.use('/', indexRouter)
-app.use('/user', usersRouter)
-app.use('/Rwl', RwlRouter)
+// 路由注册
+app.use('/api', indexRouter)
+app.use('/api/user', usersRouter)
+app.use('/api/processEcharts', processEchartsRouter)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
