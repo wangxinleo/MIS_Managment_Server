@@ -13,7 +13,7 @@ router.post('/getEmpData', (req, res, next) => {
     return el !== ''
   })
   // 处理需要查询的字段
-  const slotSql = jointSql(reqData.empText)
+  const slotSql = jointSql(reqData.empText, ['Subject'])
   // sql语句
   const sql =
     `
@@ -115,19 +115,109 @@ router.post('/openFilesUrl', (req, res, next) => {
   })
   // return res.sendFile(path.join(process.cwd(), reqData.path))
 })
+// 查询功能机申请记录
+router.post('/getPhonesData', (req, res, next) => {
+  const reqData = req.body
+  // 过滤数组，去除空字符
+  reqData.empText = reqData.empText.filter((el) => {
+    return el !== ''
+  })
+  // 处理需要查询的字段
+  const slotSql = jointSql(reqData.empText, ['employeeCode', 'employeeName'])
+  // sql语句
+  sql =
+    `
+	select top ` +
+    reqData.pageSize +
+    ` COUNT(1) OVER() AS total,* from [MISissuePhones]
+	where id not in
+(select top ` +
+    (reqData.page - 1) * reqData.pageSize +
+    ` id from [MISissuePhones]
+where 
+	` +
+    slotSql +
+    `
+order by id desc)
+	and ` +
+    slotSql +
+    `
+order by id desc
+	`
+  db(sql, (result) => {
+    // 无数据
+    if (result.recordset.length === 0) {
+      return res.json({
+        code: 204,
+        msg: '功能机申请记录:查询无数据',
+        totalCount: 0,
+      })
+    }
+
+    return res.json({
+      code: 200,
+      msg: '获取功能机申请记录数据成功',
+      page: reqData.page,
+      pageSize: reqData.pageSize,
+      searchHistroy: reqData.empText,
+      totalCount: result.recordset[0].total,
+      data: result.recordset,
+    })
+  })
+})
+// 查询功能机所属厂提示信息
+router.post('/getAreaOption', (req, res, next) => {
+  const sql = `SELECT area FROM [bpm].[dbo].[MISissuePhones] group by area`
+  const data = []
+  db(sql, (result) => {
+    result.recordset.forEach((item) => {
+      data.push(item.area)
+    })
+    return res.json({
+      code: 200,
+      msg: '获取所属厂提示信息数据成功',
+      data: data,
+    })
+  })
+})
+// 查询功能机部门提示信息
+router.post('/getDeptOption', (req, res, next) => {
+  const sql = `SELECT TOP 1000 [Department] FROM [bpm].[dbo].[MISissuePhones] group by [Department]`
+  const data = []
+  db(sql, (result) => {
+    result.recordset.forEach((item) => {
+      data.push(item.Department)
+    })
+    return res.json({
+      code: 200,
+      msg: '获取部门提示信息数据成功',
+      data: data,
+    })
+  })
+})
 
 // 需要查询的字段组装成模糊查询的条件
-function jointSql(empData) {
+/**
+ *
+ * @param {*} empData 从前端获取的search关键字
+ * @param {*} sereachKeyArr 需要模糊查询的表字段
+ */
+function jointSql(empData, sereachKeyArr) {
   let slotSql = ''
   const length = empData.length
-  empData.forEach((item, index) => {
-    if (index == 0) {
-      slotSql += `(Subject like '%` + item + `%' `
-    } else if (index < length) {
-      slotSql += `or Subject like '%` + item + `%' `
+  sereachKeyArr.forEach((sereachKey, i) => {
+    empData.forEach((item, index) => {
+      if (index == 0) {
+        slotSql += `(` + sereachKey + ` like '%` + item + `%' `
+      } else if (index < length) {
+        slotSql += `or ` + sereachKey + ` like '%` + item + `%' `
+      }
+    })
+    slotSql += ')'
+    if (i < sereachKeyArr.length - 1) {
+      slotSql += ' or '
     }
   })
-  slotSql += ')'
 
   return slotSql
 }

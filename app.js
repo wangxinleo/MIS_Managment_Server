@@ -9,6 +9,7 @@ var usersRouter = require('./routes/user')
 var processEchartsRouter = require('./routes/processEcharts')
 var changelogRouter = require('./routes/changelog')
 var MISRouter = require('./routes/MIS')
+var uploadRouter = require('./routes/upload')
 
 var app = express()
 
@@ -42,6 +43,7 @@ app.use('/api/user', usersRouter)
 app.use('/api/processEcharts', processEchartsRouter)
 app.use('/api/changelog', changelogRouter)
 app.use('/api/MIS', MISRouter)
+app.use('/api/private/v1/upload', uploadRouter)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
