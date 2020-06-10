@@ -2,29 +2,19 @@ const express = require('express')
 const router = express.Router()
 const db = require('../database/db')
 const fxp = require('../middleware/fxp')
-// 处理需要查询的字段
-function jointSql(empData) {
-  let slotSql = ''
-  const length = empData.length
-  empData.forEach((item, index) => {
-    if (index == 0) {
-      slotSql += `(Subject like '%` + item + `%' `
-    } else if (index < length) {
-      slotSql += `or Subject like '%` + item + `%' `
-    }
-  })
-  slotSql += ')'
+const fs = require('fs')
+const path = require('path')
 
-  return slotSql
-}
-
+// 查询OA权限申请记录
 router.post('/getEmpData', (req, res, next) => {
   const reqData = req.body
+  // 过滤数组，去除空字符
   reqData.empText = reqData.empText.filter((el) => {
     return el !== ''
   })
   // 处理需要查询的字段
   const slotSql = jointSql(reqData.empText)
+  // sql语句
   const sql =
     `
 	select top ` +
@@ -45,12 +35,14 @@ order by WF_DocCreated desc)
     `
 order by WF_DocCreated desc
 	`
+  // 请求主体
   db(sql, (result) => {
+    // 无数据
     if (result.recordset.length === 0) {
       return res.json({
         code: 204,
         msg: 'OA权限申请记录:查询无数据',
-        data: [],
+        totalCount: 0,
       })
     }
     // xml转json
@@ -65,7 +57,7 @@ order by WF_DocCreated desc
     })
     return res.json({
       code: 200,
-      msg: 'success',
+      msg: '获取OA权限申请记录数据成功',
       page: reqData.page,
       pageSize: reqData.pageSize,
       searchHistroy: reqData.empText,
@@ -74,5 +66,107 @@ order by WF_DocCreated desc
     })
   })
 })
+// 查询纸质档案记录
+router.post('/getFilesData', (req, res, next) => {
+  const reqData = req.body
+  // 过滤数组，去除空字符
+  reqData.empText = reqData.empText.filter((el) => {
+    return el !== ''
+  })
+  // 返回工作目录路径
+  var root = path.join(process.cwd(), '/files')
+  // 查询文件
+  const pathArray = readDirSync(root, reqData.empText, [])
+  if (pathArray.length > 0) {
+    return res.json({
+      code: 200,
+      msg: '获取纸质档案记录成功',
+      totalCount: pathArray.length,
+      data: pathArray,
+    })
+  } else {
+    return res.json({
+      code: 204,
+      msg: '纸质档案记录:查询无数据',
+      totalCount: 0,
+    })
+  }
+})
+// 打开纸质档案
+router.post('/openFilesUrl', (req, res, next) => {
+  const reqData = req.body
+  // 读取文件
+  const imageData = fs.readFileSync(path.join(process.cwd(), reqData.path))
+  // 转图片base64编码
+  const imageBase64 = imageData.toString('base64')
+  let imagePrefix = ''
+  // 判断图片类型
+  if (reqData.type == 'png') {
+    imagePrefix = 'data:image/png;base64,'
+  } else if (reqData.type == 'jpeg') {
+    imagePrefix = 'data:image/jpeg;base64,'
+  } else {
+    imagePrefix = 'data:image/jpg;base64,'
+  }
+  return res.json({
+    code: 200,
+    msg: 'success',
+    data: imagePrefix + imageBase64,
+  })
+  // return res.sendFile(path.join(process.cwd(), reqData.path))
+})
+
+// 需要查询的字段组装成模糊查询的条件
+function jointSql(empData) {
+  let slotSql = ''
+  const length = empData.length
+  empData.forEach((item, index) => {
+    if (index == 0) {
+      slotSql += `(Subject like '%` + item + `%' `
+    } else if (index < length) {
+      slotSql += `or Subject like '%` + item + `%' `
+    }
+  })
+  slotSql += ')'
+
+  return slotSql
+}
+// 遍历目录（同步操作）
+function readDirSync(path, searchAarry, pathArray) {
+  const temp = fs.readdirSync(path)
+  temp.forEach((item, index) => {
+    const info = fs.statSync(path + '/' + item)
+    if (info.isDirectory()) {
+      // 递归查找
+      pathArray = readDirSync(path + '/' + item, searchAarry, pathArray)
+    } else {
+      // 判断是否包含搜索关键字
+      searchAarry.forEach((keyStr) => {
+        if (item.toLowerCase().indexOf((keyStr + '').toLowerCase()) !== -1) {
+          // 组装数据
+          let staticPath = path + '/' + item
+          staticPath = staticPath.split('\\')
+          let itemArr = item.split('.')
+          let obj = {
+            name: itemArr[0],
+            type: itemArr[itemArr.length - 1],
+            path: staticPath[staticPath.length - 1],
+          }
+          pathArray.push(obj)
+        }
+      })
+    }
+  })
+  return pathArray
+}
 
 module.exports = router
+
+/**
+__dirname 　　　　表示当前文件所在的目录的绝对路径
+__filename 　　　　表示当前文件的绝对路径
+module.filename ==== __filename 等价
+process.cwd() 　　 返回运行当前脚本的工作目录的路径，一般情况下不变，在process.chdir()后，或者shelljs.cd切换目录后会发生变化
+process.chdir() 　　改变工作目录
+ * 
+ */
