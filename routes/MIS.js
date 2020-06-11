@@ -195,6 +195,88 @@ router.post('/getDeptOption', (req, res, next) => {
     })
   })
 })
+// 新增功能机信息
+router.post('/addMISmobileForm', (req, res, next) => {
+  const reqData = req.body
+  const sql =
+    `
+	INSERT INTO [bpm].[dbo].[MISissuePhones] VALUES ('` +
+    reqData.employeeCode +
+    `','` +
+    reqData.area +
+    `','` +
+    reqData.Department +
+    `','` +
+    reqData.employeeName +
+    `','` +
+    reqData.issuePhoneNum +
+    `','` +
+    reqData.issuePhoneSort +
+    `','` +
+    reqData.isReturn +
+    `','` +
+    reqData.remark +
+    `')
+	`
+  db(sql, (result) => {
+    return res.json({
+      code: 200,
+      msg: '功能机记录数据已成功上传',
+    })
+  })
+})
+// 修改功能机信息
+router.post('/updateMISmobileForm', (req, res, next) => {
+  const reqData = req.body
+  const sql =
+    `
+				UPDATE [bpm].[dbo].[MISissuePhones] SET employeeCode = '` +
+    reqData.employeeCode +
+    `', area = '` +
+    reqData.area +
+    `',
+			Department = '` +
+    reqData.Department +
+    `', employeeName = '` +
+    reqData.employeeName +
+    `',
+			issuePhoneNum = '` +
+    reqData.issuePhoneNum +
+    `', issuePhoneSort = '` +
+    reqData.issuePhoneSort +
+    `',
+			isReturn = '` +
+    reqData.isReturn +
+    `', remark = '` +
+    reqData.remark +
+    `'
+			WHERE id = '` +
+    reqData.id +
+    `'
+				`
+  db(sql, (result) => {
+    return res.json({
+      code: 200,
+      msg: '功能机记录数据已成功修改',
+    })
+  })
+})
+// 删除功能机一行记录
+router.post('/deletePhonesData', (req, res, next) => {
+  const reqData = req.body
+  const sql =
+    `
+	delete from [bpm].[dbo].[MISissuePhones] where id = '` +
+    reqData.id +
+    `'
+	`
+  db(sql, (result) => {
+    return res.json({
+      code: 200,
+      msg: '数据删除成功',
+    })
+  })
+})
 
 // 需要查询的字段组装成模糊查询的条件
 /**
