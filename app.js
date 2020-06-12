@@ -15,17 +15,17 @@ var uploadRouter = require('./routes/upload')
 var app = express()
 
 //后端添加请求头解决跨域
-app.all('*', function (req, res, next) {
-  res.header('Access-Control-Allow-Origin', 'http://localhost:81')
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Content-Type,accessToken ,Content-Length, Authorization, Accept,X-Requested-With'
-  )
-  res.header('Access-Control-Allow-Methods', 'PUT,POST,GET,DELETE,OPTIONS')
-  res.header('Access-Control-Allow-Credentials', true)
-  res.header('X-Powered-By', ' 3.2.1')
-  next()
-})
+// app.all('*', function (req, res, next) {
+//   res.header('Access-Control-Allow-Origin', 'http://localhost:81')
+//   res.header(
+//     'Access-Control-Allow-Headers',
+//     'Content-Type,accessToken ,Content-Length, Authorization, Accept,X-Requested-With'
+//   )
+//   res.header('Access-Control-Allow-Methods', 'PUT,POST,GET,DELETE,OPTIONS')
+//   res.header('Access-Control-Allow-Credentials', true)
+//   res.header('X-Powered-By', ' 3.2.1')
+//   next()
+// })
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'))
