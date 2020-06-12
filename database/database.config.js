@@ -7,5 +7,7 @@
 //   port: 1433,
 // }
 
-const config = 'mssql://ds:Pw123456@172.18.8.20/bpm'
-module.exports = config
+const bpm = 'mssql://ds:Pw123456@172.18.8.20/bpm'
+const sso = 'mssql://ds:Pw123456@172.18.8.20/sso'
+module.exports.bpm = bpm
+module.exports.sso = sso

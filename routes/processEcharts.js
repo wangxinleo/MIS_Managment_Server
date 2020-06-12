@@ -5,7 +5,7 @@ const db = require('../database/db')
 router.post('/getHotProcess', (req, res, next) => {
   const sql =
     'SELECT WF_ProcessName as name, count(*) as value  FROM [bpm].[dbo].[BPM_ArchivedData] where WF_DocCreated>=dateadd(month,-1,getdate())  group by WF_ProcessName order by value desc'
-  db(sql, (result) => {
+  db.bpm(sql, (result) => {
     // console.log(result)
     const arr = [
       '#1890FF',
@@ -81,7 +81,7 @@ router.post('/getMISProcessList', (req, res, next) => {
 		group by WF_ProcessName
 		order by value desc
 		`
-  db(sql, (result) => {
+  db.bpm(sql, (result) => {
     let nameList = []
     let valueList = []
     let totalCount = 0
@@ -146,7 +146,7 @@ router.post('/getProcessNumByYY', (req, res, next) => {
   group by convert(varchar(7),WF_DocCreated),convert(varchar(4),WF_DocCreated) 
   order by yymm asc
 	`
-  db(sql, (result) => {
+  db.bpm(sql, (result) => {
     let lastYear = []
     let nowYear = []
 

@@ -36,7 +36,7 @@ order by WF_DocCreated desc)
 order by WF_DocCreated desc
 	`
   // 请求主体
-  db(sql, (result) => {
+  db.bpm(sql, (result) => {
     // 无数据
     if (result.recordset.length === 0) {
       return res.json({
@@ -144,7 +144,7 @@ order by id desc)
     `
 order by id desc
 	`
-  db(sql, (result) => {
+  db.bpm(sql, (result) => {
     // 无数据
     if (result.recordset.length === 0) {
       return res.json({
@@ -169,7 +169,7 @@ order by id desc
 router.post('/getAreaOption', (req, res, next) => {
   const sql = `SELECT area FROM [bpm].[dbo].[MISissuePhones] group by area`
   const data = []
-  db(sql, (result) => {
+  db.bpm(sql, (result) => {
     result.recordset.forEach((item) => {
       data.push(item.area)
     })
@@ -184,7 +184,7 @@ router.post('/getAreaOption', (req, res, next) => {
 router.post('/getDeptOption', (req, res, next) => {
   const sql = `SELECT TOP 1000 [Department] FROM [bpm].[dbo].[MISissuePhones] group by [Department]`
   const data = []
-  db(sql, (result) => {
+  db.bpm(sql, (result) => {
     result.recordset.forEach((item) => {
       data.push(item.Department)
     })
@@ -218,7 +218,7 @@ router.post('/addMISmobileForm', (req, res, next) => {
     reqData.remark +
     `')
 	`
-  db(sql, (result) => {
+  db.bpm(sql, (result) => {
     return res.json({
       code: 200,
       msg: '功能机记录数据已成功上传',
@@ -254,7 +254,7 @@ router.post('/updateMISmobileForm', (req, res, next) => {
     reqData.id +
     `'
 				`
-  db(sql, (result) => {
+  db.bpm(sql, (result) => {
     return res.json({
       code: 200,
       msg: '功能机记录数据已成功修改',
@@ -270,7 +270,7 @@ router.post('/deletePhonesData', (req, res, next) => {
     reqData.id +
     `'
 	`
-  db(sql, (result) => {
+  db.bpm(sql, (result) => {
     return res.json({
       code: 200,
       msg: '数据删除成功',
