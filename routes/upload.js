@@ -11,7 +11,6 @@ router.post(
   (req, res, next) => {
     let file = req.file
     //这里修改文件名字，比较随意
-    console.log(file)
     fs.renameSync('./files/' + file.filename, './files/' + file.originalname)
     return res.json({
       code: 200,
