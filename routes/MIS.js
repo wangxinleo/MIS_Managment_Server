@@ -280,12 +280,30 @@ router.post('/deletePhonesData', (req, res, next) => {
 // 查找电脑档案记录
 router.post('/getComputersData', (req, res, next) => {
   const reqData = req.body
-  const sql = `select * from ac_computer where userid = '825139'`
+  // 过滤数组，去除空字符
+  reqData.empText = reqData.empText.filter((el) => {
+    return el !== ''
+  })
+  // 处理需要查询的字段
+  const slotSql = jointSql(reqData.empText, ['userid', 'user'])
+  // sql语句
+  const sql =
+    `select SQL_CALC_FOUND_ROWS * from ac_computer where ` +
+    slotSql +
+    ` order by time desc limit ` +
+    (reqData.page - 1) * reqData.pageSize +
+    `,` +
+    reqData.pageSize +
+    `;` +
+    `SELECT FOUND_ROWS() as total;`
+
+  // const total = `SELECT FOUND_ROWS() as total;`
   db.archive(sql, (result) => {
     return res.json({
       code: 200,
       msg: '查询电脑档案记录成功',
-      data: result,
+      totalCount: result[1][0].total,
+      data: result[0],
     })
   })
 })

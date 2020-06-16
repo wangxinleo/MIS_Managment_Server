@@ -10,12 +10,13 @@ const mysql = require('mysql')
 
 const bpm = 'mssql://ds:Pw123456@172.18.8.20/bpm'
 const sso = 'mssql://ds:Pw123456@172.18.8.20/sso'
-const archive = mysql.createConnection({
+const archive = {
   host: '172.18.8.15',
   user: 'root',
   password: 'admin',
   database: 'archive',
-})
+  multipleStatements: true, // 支持执行多条 sql 语句
+}
 module.exports.bpm = bpm
 module.exports.sso = sso
 module.exports.archive = archive

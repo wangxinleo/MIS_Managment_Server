@@ -36,7 +36,7 @@ var sso = (sqlstr, callback) => {
 }
 
 var archive = (sqlstr, callback) => {
-  const sql = config.archive
+  const sql = mysql.createConnection(config.archive)
   sql.connect()
   sql.query(sqlstr, (error, result, fileds) => {
     if (error) {
