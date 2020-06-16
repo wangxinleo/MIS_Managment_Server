@@ -1,6 +1,7 @@
 // 配置文件
 var config = require('./database.config.js')
 var sql = require('mssql')
+var mysql = require('mysql')
 
 var bpm = (sqlstr, callback) => {
   sql
@@ -34,5 +35,19 @@ var sso = (sqlstr, callback) => {
     })
 }
 
+var archive = (sqlstr, callback) => {
+  const sql = config.archive
+  sql.connect()
+  sql.query(sqlstr, (error, result, fileds) => {
+    if (error) {
+      console.log(error)
+      sql.end()
+    }
+    callback(result)
+    sql.end()
+  })
+}
+
 module.exports.bpm = bpm
 module.exports.sso = sso
+module.exports.archive = archive

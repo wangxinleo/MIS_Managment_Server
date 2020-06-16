@@ -277,7 +277,18 @@ router.post('/deletePhonesData', (req, res, next) => {
     })
   })
 })
-
+// 查找电脑档案记录
+router.post('/getComputersData', (req, res, next) => {
+  const reqData = req.body
+  const sql = `select * from ac_computer where userid = '825139'`
+  db.archive(sql, (result) => {
+    return res.json({
+      code: 200,
+      msg: '查询电脑档案记录成功',
+      data: result,
+    })
+  })
+})
 // 需要查询的字段组装成模糊查询的条件
 /**
  *
