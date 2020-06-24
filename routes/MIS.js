@@ -302,6 +302,9 @@ router.post('/getComputersData', (req, res, next) => {
     return res.json({
       code: 200,
       msg: '查询电脑档案记录成功',
+      page: reqData.page,
+      pageSize: reqData.pageSize,
+      searchHistroy: reqData.empText,
       totalCount: result[1][0].total,
       data: result[0],
     })
