@@ -310,10 +310,66 @@ router.post('/getComputersData', (req, res, next) => {
     })
   })
 })
+// 查询电脑维修记录
+router.post('/getMISPCMaintainData', (req, res, next) => {
+  const reqData = req.body
+  // 处理需要查询的字段
+  const slotSql = jointSql(reqData.empText, [
+    'OAid',
+    'CNum',
+    'Contact',
+    'Maintainer',
+  ])
+  const sql =
+    `
+	select top ` +
+    reqData.pageSize +
+    ` COUNT(1) OVER() AS total,* from [BPM_MISComputerMaintain]
+        where [id] not in
+(select top ` +
+    (reqData.page - 1) * reqData.pageSize +
+    ` [id] from [BPM_MISComputerMaintain]
+where ` +
+    slotSql +
+    ` and [StartDate] between '` +
+    reqData.startDate +
+    `' and '` +
+    reqData.overDate +
+    `'
+order by [StartDate] desc)
+and (` +
+    slotSql +
+    ` and [StartDate] between '` +
+    reqData.startDate +
+    `' and '` +
+    reqData.overDate +
+    `')
+order by [StartDate] desc
+	`
+  db.bpm(sql, (result) => {
+    // 无数据
+    if (result.recordset.length === 0) {
+      return res.json({
+        code: 204,
+        msg: '电脑维修记录:查询无数据',
+        totalCount: 0,
+      })
+    }
+    return res.json({
+      code: 200,
+      msg: '获取电脑维修记录数据成功',
+      page: reqData.page,
+      pageSize: reqData.pageSize,
+      startDate: reqData.startDate,
+      overDate: reqData.overDate,
+      searchHistroy: reqData.empText,
+      totalCount: result.recordset[0].total,
+      data: result.recordset,
+    })
+  })
+})
+
 // 需要查询的字段组装成模糊查询的条件
-// 划水
-// 摸鱼
-// 准备面试题
 /**
  *
  * @param {*} empData 从前端获取的search关键字
