@@ -313,13 +313,18 @@ router.post('/getComputersData', (req, res, next) => {
 // 查询电脑维修记录
 router.post('/getMISPCMaintainData', (req, res, next) => {
   const reqData = req.body
+  let slotSql = ''
+  let andStr = ''
   // 处理需要查询的字段
-  const slotSql = jointSql(reqData.empText, [
-    'OAid',
-    'CNum',
-    'Contact',
-    'Maintainer',
-  ])
+  if (reqData.empText.length > 0) {
+    slotSql = jointSql(reqData.empText, [
+      'OAid',
+      'CNum',
+      'Contact',
+      'Maintainer',
+    ])
+    andStr = 'and'
+  }
   const sql =
     `
 	select top ` +
@@ -331,7 +336,9 @@ router.post('/getMISPCMaintainData', (req, res, next) => {
     ` [id] from [BPM_MISComputerMaintain]
 where ` +
     slotSql +
-    ` and [StartDate] between '` +
+    ` ` +
+    andStr +
+    ` [StartDate] between '` +
     reqData.startDate +
     `' and '` +
     reqData.overDate +
@@ -339,7 +346,9 @@ where ` +
 order by [StartDate] desc)
 and (` +
     slotSql +
-    ` and [StartDate] between '` +
+    ` ` +
+    andStr +
+    ` [StartDate] between '` +
     reqData.startDate +
     `' and '` +
     reqData.overDate +
