@@ -362,7 +362,6 @@ and (` +
     `')
 order by [StartDate] desc
 	`
-  console.log(sql)
   db.bpm(sql, (result) => {
     // 无数据
     if (result.recordset.length === 0) {
