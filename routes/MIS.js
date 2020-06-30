@@ -315,15 +315,20 @@ router.post('/getMISPCMaintainData', (req, res, next) => {
   const reqData = req.body
   let slotSql = ''
   let andStr = ''
+  let Filter = ''
   // 处理需要查询的字段
-  if (reqData.empText.length > 0) {
-    slotSql = jointSql(reqData.empText, [
-      'OAid',
-      'CNum',
-      'Contact',
-      'Maintainer',
-    ])
+  if (reqData.empText.length > 0 && reqData.select) {
+    slotSql = jointSql(reqData.empText, reqData.select.split(' '))
     andStr = 'and'
+  }
+  // 筛选的数据
+  if (reqData.checkList.length > 0) {
+    if (reqData.checkList.indexOf('维修中') !== -1) {
+      Filter += " STA = '维修中' and "
+    }
+    if (reqData.checkList.indexOf('已报废') !== -1) {
+      Filter += "Scrap is not null and Scrap <> '' and"
+    }
   }
   const sql =
     `
@@ -338,6 +343,7 @@ where ` +
     slotSql +
     ` ` +
     andStr +
+    Filter +
     ` [StartDate] between '` +
     reqData.startDate +
     `' and '` +
@@ -348,6 +354,7 @@ and (` +
     slotSql +
     ` ` +
     andStr +
+    Filter +
     ` [StartDate] between '` +
     reqData.startDate +
     `' and '` +
@@ -355,6 +362,7 @@ and (` +
     `')
 order by [StartDate] desc
 	`
+  console.log(sql)
   db.bpm(sql, (result) => {
     // 无数据
     if (result.recordset.length === 0) {
@@ -372,6 +380,8 @@ order by [StartDate] desc
       startDate: reqData.startDate,
       overDate: reqData.overDate,
       searchHistroy: reqData.empText,
+      select: reqData.select,
+      checkList: reqData.checkList,
       totalCount: result.recordset[0].total,
       data: result.recordset,
     })
@@ -400,7 +410,6 @@ function jointSql(empData, sereachKeyArr) {
       slotSql += ' or '
     }
   })
-
   return slotSql
 }
 // 遍历目录（同步操作）
