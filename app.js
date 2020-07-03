@@ -17,7 +17,8 @@ var app = express()
 
 //后端添加请求头解决跨域
 app.all('*', function (req, res, next) {
-  res.header('Access-Control-Allow-Origin', '172.18.8.169')
+  // 172.18.8.169,172.18.8.20
+  res.header('Access-Control-Allow-Origin', '*')
   res.header(
     'Access-Control-Allow-Headers',
     'Content-Type,accessToken ,Content-Length, Authorization, Accept,X-Requested-With'
