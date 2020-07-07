@@ -2,6 +2,7 @@ var express = require('express')
 var router = express.Router()
 const db = require('../database/db')
 
+// 获取OA系统修改密码记录
 router.get('/getPwdChangeDate', (req, res, next) => {
   const reqData = req.query
   reqData.username = decodeURI(reqData.username)
