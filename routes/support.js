@@ -14,11 +14,13 @@ router.get('/getPwdChangeDate', (req, res, next) => {
 	`
   db.bpm(sql, (result) => {
     if (result.rowsAffected[0] === 0) {
+      // 已修改
       return res.jsonp({
         username: reqData.username,
         ischange: false,
       })
     } else {
+      // 未修改
       return res.jsonp({
         username: reqData.username,
         ischange: true,
