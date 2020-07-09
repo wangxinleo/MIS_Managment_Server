@@ -10,12 +10,12 @@ var bpm = (sqlstr, callback) => {
       return sql.query(sqlstr)
     })
     .then((result) => {
-      callback(result)
       sql.close()
+      callback(result)
     })
     .catch((error) => {
-      console.log(error)
       sql.close()
+      console.log(error)
     })
 }
 
