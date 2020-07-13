@@ -9,8 +9,9 @@ var bpm = (sqlstr, callback) => {
     .then(function () {
       return sql.query(sqlstr)
     })
-    .then((result) => {
-      sql.close()
+    .then(async (result) => {
+      await sql.close()
+      console.log('sql.close')
       callback(result)
     })
     .catch((error) => {
