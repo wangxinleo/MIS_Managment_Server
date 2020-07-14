@@ -29,6 +29,14 @@ router.get('/getPwdChangeDate', (req, res, next) => {
     }
   })
 })
+/**
+{
+  "list":[
+  {
+    "WF_DocNumber": "xxx"
+  }]
+}
+ */
 // BPM_MainData数据恢复脚本
 router.post('/inputMan', (req, res, next) => {
   const reqData = req.body.list
