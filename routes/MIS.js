@@ -431,7 +431,7 @@ order by [StartDate] desc
  * @param {*} empData 从前端获取的search关键字
  * @param {*} sereachKeyArr 需要模糊查询的表字段
  */
-function jointSql (empData, sereachKeyArr) {
+function jointSql(empData, sereachKeyArr) {
   let slotSql = ''
   const length = empData.length
   sereachKeyArr.forEach((sereachKey, i) => {
@@ -450,7 +450,7 @@ function jointSql (empData, sereachKeyArr) {
   return slotSql
 }
 // 遍历目录（同步操作）
-function readDirSync (path, searchAarry, pathArray) {
+function readDirSync(path, searchAarry, pathArray) {
   const temp = fs.readdirSync(path)
   temp.forEach((item, index) => {
     const info = fs.statSync(path + '/' + item)
@@ -508,3 +508,8 @@ process.chdir() 　　改变工作目录
 
 //  恢复
 // 加入定时任务
+// // try {
+
+// } catch (error) {
+
+// }
