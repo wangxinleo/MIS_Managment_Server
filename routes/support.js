@@ -29,6 +29,40 @@ router.get('/getPwdChangeDate', (req, res, next) => {
     }
   })
 })
+// 获取员工入厂时间
+router.post('/getEmpOnDutyTime', (req, res, next) => {
+  const reqData = req.body
+  const sql =
+    `
+	select top ` +
+    reqData.pageSize +
+    ` chinesename,employeecode,ondutytime,outdutytime,COUNT(1) OVER() AS total from [employeemsg] 
+	where employeecode not in
+(select top ` +
+    (reqData.page - 1) * reqData.pageSize +
+    ` employeecode from [employeemsg]
+where chinesename like '%` +
+    reqData.chinesename +
+    `%' or
+employeecode like '%` +
+    reqData.employeecode +
+    `%'
+order by ondutytime desc)
+	and chinesename like '%` +
+    reqData.chinesename +
+    `%' 
+	or employeecode like '%` +
+    reqData.employeecode +
+    `%'
+order by ondutytime desc
+	`
+  db.pcb(sql, (result) => {
+    return res.json({ data: result })
+  })
+})
+
+// BPM_MainData数据恢复脚本
+// 传参要求
 /**
 {
   "list":[
@@ -37,7 +71,6 @@ router.get('/getPwdChangeDate', (req, res, next) => {
   }]
 }
  */
-// BPM_MainData数据恢复脚本
 router.post('/inputMan', (req, res, next) => {
   const reqData = req.body.list
   reqData.forEach((element) => {
@@ -123,6 +156,7 @@ router.post('/inputMan', (req, res, next) => {
   })
   return res.json({ success: '修改完成' })
 })
+
 // router.use('/inputMan', (data, req, res, next) => {
 //   const sql2 =
 //     `update BPM_MainData set XmlData='` +

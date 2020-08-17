@@ -11,7 +11,22 @@ var bpm = (sqlstr, callback) => {
     })
     .then(async (result) => {
       await sql.close()
-      console.log('sql.close')
+      callback(result)
+    })
+    .catch((error) => {
+      sql.close()
+      console.log(error)
+    })
+}
+
+var pcb = (sqlstr, callback) => {
+  sql
+    .connect(config.pcb)
+    .then(function () {
+      return sql.query(sqlstr)
+    })
+    .then(async (result) => {
+      await sql.close()
       callback(result)
     })
     .catch((error) => {
@@ -50,5 +65,6 @@ var archive = (sqlstr, callback) => {
 }
 
 module.exports.bpm = bpm
+module.exports.pcb = pcb
 module.exports.sso = sso
 module.exports.archive = archive

@@ -10,6 +10,7 @@ const mysql = require('mysql')
 
 const bpm = 'mssql://ds:Pw123456@172.18.8.20/bpm'
 const sso = 'mssql://ds:Pw123456@172.18.8.20/sso'
+const pcb = 'mssql://WZPCBConnect:62ddf8f60269678@172.18.0.8/wisdompcb'
 const archive = {
   host: '172.18.8.15',
   user: 'root',
@@ -18,5 +19,6 @@ const archive = {
   multipleStatements: true, // 支持执行多条 sql 语句
 }
 module.exports.bpm = bpm
+module.exports.pcb = pcb
 module.exports.sso = sso
 module.exports.archive = archive
