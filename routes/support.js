@@ -32,6 +32,7 @@ router.get('/getPwdChangeDate', (req, res, next) => {
 // 获取员工入厂时间
 router.post('/getEmpOnDutyTime', (req, res, next) => {
   const reqData = req.body
+  // 验证是否存在
   const sql =
     `
 	select top ` +
