@@ -1,4 +1,4 @@
-class Promise {
+class myPromise {
 	callbacks = [];
 	state = 'pending';
 	value = null;
@@ -6,25 +6,43 @@ class Promise {
 		fn(this.resolve.bind(this));
 	}
 	then (onFulfilled) {
+		return new myPromise(resolve => {
+			this.handle({
+				onFulfilled: onFulfilled || null,
+				resolve: resolve
+			});
+		});
+	}
+	handle (callback) {
 		if (this.state === 'pending') {
-			this.callbacks.push(onFulfilled);
-		} else {
-			onFulfilled(this.value);
+			this.callbacks.push(callback);
+			return;
 		}
-		return this;
+
+		if (!callback.onFulfilled) {
+			callback.resolve(this.value);
+			return;
+		}
+
+		let ret = callback.onFulfilled(this.value);
+		console.log(ret);
+		callback.resolve(ret);
 	}
 	resolve (value) {
 		this.state = 'fulfilled';
 		this.value = value;
-		this.callbacks.forEach(fn => fn(value));
+		this.callbacks.forEach(callback => this.handle(callback));
+
+
 	}
 }
 
-let p = new Promise(resolve => {
+let p = new myPromise(resolve => {
 	setTimeout(() => {
-		console.log('done');
-		resolve('5秒');
-	}, 1000);
-}).then(tip => {
-	console.log(tip);
+		console.log('file');
+		resolve('1');
+	});
+}).then((res) => {
+	console.log(res);
+	return res;
 });
